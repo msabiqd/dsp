@@ -12,42 +12,84 @@ import (
 )
 
 func TestGetUserById(t *testing.T) {
-	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(1*time.Minute))
-	defer cancel()
 
-	db, mock, err := sqlmock.New()
-	if err != nil {
-		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+	tests := []struct {
+		name      string
+		expectErr bool
+		output    entity.User
+		request   entity.GetUserByIdRequest
+		rows      *sqlmock.Rows
+	}{
+		{
+			name:      "Success",
+			expectErr: false,
+			output:    entity.User{Id: 1, FullName: "asd", PhoneNumber: "0821", Password: "pw", SuccessfulLogin: 1},
+			request:   entity.GetUserByIdRequest{Id: 1},
+			rows:      sqlmock.NewRows([]string{"id", "full_name", "phone_number", "password", "successful_login"}).AddRow(1, "asd", "0821", "pw", 1),
+		},
 	}
-	defer db.Close()
 
-	mock.ExpectQuery(regexp.QuoteMeta(getUserById)).WillReturnRows(sqlmock.NewRows([]string{"id", "full_name", "phone_number", "password", "successful_login"}).AddRow(1, "asd", "0821", "pw", 1))
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(1*time.Minute))
+			defer cancel()
 
-	repo := Repository{Db: db}
-	result, err := repo.GetUserById(ctx, entity.GetUserByIdRequest{Id: 1})
+			db, mock, err := sqlmock.New()
+			if err != nil {
+				t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+			}
+			defer db.Close()
 
-	assert.Nil(t, err)
-	assert.Equal(t, entity.User{Id: 1, FullName: "asd", PhoneNumber: "0821", Password: "pw", SuccessfulLogin: 1}, result)
+			mock.ExpectQuery(regexp.QuoteMeta(getUserById)).WillReturnRows(tt.rows)
 
+			repo := Repository{Db: db}
+			result, err := repo.GetUserById(ctx, tt.request)
+
+			assert.Nil(t, err)
+			assert.Equal(t, tt.output, result)
+		})
+	}
 }
 
 func TestGetUserByPhoneNumber(t *testing.T) {
-	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(1*time.Minute))
-	defer cancel()
 
-	db, mock, err := sqlmock.New()
-	if err != nil {
-		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+	tests := []struct {
+		name      string
+		expectErr bool
+		output    entity.User
+		request   entity.GetUserByPhoneNumberRequest
+		rows      *sqlmock.Rows
+	}{
+		{
+			name:      "Success",
+			expectErr: false,
+			output:    entity.User{Id: 1, FullName: "asd", PhoneNumber: "0821", Password: "pw", SuccessfulLogin: 1},
+			request:   entity.GetUserByPhoneNumberRequest{PhoneNumber: "0821"},
+			rows:      sqlmock.NewRows([]string{"id", "full_name", "phone_number", "password", "successful_login"}).AddRow(1, "asd", "0821", "pw", 1),
+		},
 	}
-	defer db.Close()
 
-	mock.ExpectQuery(regexp.QuoteMeta(getUserByPhoneNumber)).WillReturnRows(sqlmock.NewRows([]string{"id", "full_name", "phone_number", "password", "successful_login"}).AddRow(1, "asd", "0821", "pw", 1))
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(1*time.Minute))
+			defer cancel()
 
-	repo := Repository{Db: db}
-	result, err := repo.GetUserByPhoneNumber(ctx, entity.GetUserByPhoneNumberRequest{PhoneNumber: "0821"})
+			db, mock, err := sqlmock.New()
+			if err != nil {
+				t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+			}
+			defer db.Close()
 
-	assert.Nil(t, err)
-	assert.Equal(t, entity.User{Id: 1, FullName: "asd", PhoneNumber: "0821", Password: "pw", SuccessfulLogin: 1}, result)
+			mock.ExpectQuery(regexp.QuoteMeta(getUserByPhoneNumber)).WillReturnRows(tt.rows)
+
+			repo := Repository{Db: db}
+			result, err := repo.GetUserByPhoneNumber(ctx, tt.request)
+
+			assert.Nil(t, err)
+			assert.Equal(t, tt.output, result)
+		})
+	}
+
 }
 
 func TestCreateUser(t *testing.T) {
