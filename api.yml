@@ -1,0 +1,187 @@
+# This is the OpenAPI specification for your service. It is used to generate the client code.
+# To generate the server code, use the Gradle task `openApiGenerate`. The 
+# generated code will be placed in `build/generate-resources/main`.
+#
+# We will evaluate you based on how well you design your API.
+# 1. How well it follows REST principles.
+# 2. How easy it is to understand and use.
+#
+# References
+# 1. https://swagger.io/specification/
+openapi: "3.0.0"
+info:
+  version: 1.0.0
+  title: User Service
+  license:
+    name: MIT
+servers:
+  - url: http://localhost:8080
+paths:
+  /users/v1/registrations:
+    post:
+      summary: User registrations
+      operationId: registrations
+      requestBody:
+        description: User registration payload
+        required: true
+        content:
+          application/json:    
+            schema:
+              properties:
+                  full_name: 
+                    description: full name
+                    type: string
+                  phone_number:
+                    description: phone number
+                    type: string
+                  password:
+                    description: password
+                    type: string
+              required:
+                - full_name
+                - phone_number
+                - password
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:    
+              schema:
+                $ref: "#/components/schemas/RegistrationResponse"
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /auth/v1/login:
+    post:
+      summary: user login
+      operationId: login
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                phone_number: 
+                  description: full name
+                  type: string
+                password:
+                  description: password
+                  type: string
+          
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:    
+              schema:
+                $ref: "#/components/schemas/LoginResponse"
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /users/v1/me:
+    get:
+      summary: Get current user endpoint based on token endpoint
+      operationId: getUser
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:    
+              schema:
+                $ref: "#/components/schemas/UserResponse"
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    put:
+      summary: Update current user endpoint based on token 
+      operationId: updateUser
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                full_name: 
+                  description: full name
+                  type: string
+                phone_number:
+                  description: phone number
+                  type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:    
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+        '403':
+          description: Forbidden
+          content:
+            application/json:    
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        '400':
+          description: Forbidden
+          content:
+            application/json:    
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        '209':
+          description: Conflict
+          content:
+            application/json:    
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+components:
+  schemas:
+    LoginResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            token:
+              type: string
+    UserResponse:
+      type: object
+      required:
+        - full_name
+        - phone_numer
+      properties:
+        full_name:
+          type: string
+        phone_number:
+          type: string
+    RegistrationResponse:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          type: number
+    SuccessResponse:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
+    ErrorResponse:
+      type: object
+      required:
+        - errors
+      properties:
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              message:
+                type: string
