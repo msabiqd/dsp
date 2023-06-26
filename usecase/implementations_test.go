@@ -12,42 +12,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-// func TestRepository_GetByUserId(t *testing.T) {
-// 	type args struct {
-// 		repository MockRepository
-// 	}
-
-// 	tests := []struct {
-// 		name    string
-// 		input   args
-// 		err     error
-// 		request entity.GetUserByIdRequest
-// 		output  entity.User
-// 	}{
-// 		{
-// 			name: "Success",
-// 			input: args{
-// 				repository: MockRepository{entity.User{Id: 1}, nil},
-// 			},
-// 			err:     nil,
-// 			request: entity.GetUserByIdRequest{Id: 1},
-// 			output:  entity.User{Id: 1},
-// 		},
-// 	}
-
-// 	for _, tt := range tests {
-// 		t.Run(tt.name, func(t *testing.T) {
-// 			uc := NewUseCase(tt.input.repository)
-// 			ctx, cancel := context.WithDeadline(context.Background(), time.Now())
-// 			defer cancel()
-// 			result, err := uc.Repository.GetUserById(ctx, tt.request)
-// 			assert.Nil(t, err)
-// 			assert.Equal(t, tt.output, result)
-// 		})
-
-// 	}
-// }
-
 func TestGetByUser(t *testing.T) {
 	tests := []struct {
 		name      string
